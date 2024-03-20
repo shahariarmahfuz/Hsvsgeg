@@ -4,7 +4,7 @@ module.exports = {
     permission: 0,
     author: "Deku", //https://facebook.com/joshg101
     description: "Talk to Gemini (conversational)",
-    prefix: false,
+    prefix: true,
     category: "AI",
   },
   start: async function ({ event, text, reply, react }) {
