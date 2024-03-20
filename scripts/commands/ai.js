@@ -1,60 +1,35 @@
-
 module.exports = {
-  config: {
-  name: "ai",
-  version: "1.0.0",
-  permission: 0,
-  credits: "Nayan",
-  description: "",
-  prefix: true, 
-  category: "user", 
-  usages: "query",
-  cooldowns: 5,
-  dependencies: {
-    "nayan-server": ''
-  }
+  akane: {
+    name: "gemini",
+    permission: 0,
+    author: "Deku", //https://facebook.com/joshg101
+    description: "Talk to Gemini (conversational)",
+    prefix: true,
+    category: "AI",
   },
-
-  start: async function({ nayan, events, args, Users }) {
-
-    const axios = require("axios")
-    const request = require("request")
-    const fs = require("fs-extra")
-  const uid = events.senderID;
-  var nn = await Users.getNameUser(uid);
-  let np = args.join(" ");
-  const { gpt } = require("nayan-server");
-
-gpt({
-    messages: [
-        {
-            role: "assistant",
-            content: "Hello! How are you today?"
-        },
-        {
-            role: "user",
-            content: `Hello, my name is ${nn}.`
-        },
-        {
-            role: "assitant",
-            content: `Hello, ${nn}! How are you today?`
+  start: async function ({ event, text, reply, react }) {
+    const axios = require("axios");
+    let prompt = text.join(" "),
+      uid = event.senderID,
+      url;
+    if (!prompt) return reply(`Please enter a prompt.`);
+    react('✨');
+    try {
+      const api = `https://gemini-api.replit.app`;
+      if (event.type == "message_reply"){
+        if (event.messageReply.attachments[0]?.type == "photo"){
+        url = encodeURIComponent(event.messageReply.attachments[0].url);
+        const res = (await axios.get(api + "/gemini?prompt="+prompt+"&url="+url+"&uid="+uid)).data;
+        return reply(res.gemini)
+        } else {
+          return reply('Please reply to an image.')
         }
-    ],
-    prompt: `${np}`,
-    model: "GPT-4",
-    markdown: false
-}, (err, data) => {
-    console.log(data)
-  const answer = data.gpt
-    var msg = [];
-    {
-        msg += `${answer}`
-    }
-    return nayan.reply({
-        body: msg
-
-    }, events.threadID, events.messageID);
-  });
-
-  }
-};
+      }
+      const rest = (await axios.get(api + "/gemini?prompt=" + prompt + "&uid=" + uid)).data;
+      return reply(rest.gemini)
+    } catch (e) {
+      console.log(e);
+      return reply(e.message);
+    } //end of catch
+  }, // end of start
+}; // end of exports
