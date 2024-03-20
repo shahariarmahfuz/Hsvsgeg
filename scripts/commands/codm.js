@@ -3,7 +3,7 @@ module.exports.config = {
 	version: "1.0.0",
 	hasPermssion: 0,
 	credits: "Ainz",
-	usePrefix: false, 
+	usePrefix: true, 
 	description: "Call of duty highlights video",
 	commandCategory: "Fun",
 	usage: "{pref}(name_of_cmd)",
